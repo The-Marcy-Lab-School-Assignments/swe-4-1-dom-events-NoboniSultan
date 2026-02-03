@@ -36,6 +36,11 @@ But an error is thrown.
 3. What can be done to fix it?
 
 **Your Answer:**
+1. The specific error is a `TypeError: Cannot read properties of null`.
+
+2. This happens because the JavaScript file is loaded in the `<head>` before the DOM is fully parsed, so `document.querySelector('#my-button')` returns `null` since the button does not exist yet.
+
+3. This can be fixed by moving the `<script>` tag to the bottom of the `<body>` because the browser parses the HTML from top to bottom. When the script is placed at the end of the body, all DOM elements including the button have already been created before the JavaScript runs. This ensures that `document.querySelector('#my-button')` successfully selects the element instead of returning `null`.
 
 ## Question 2: event.target vs event.currentTarget
 
@@ -60,6 +65,7 @@ div.addEventListener('click', (event) => {
 When a user clicks the button, both `event.target` and `event.currentTarget` are logged. Explain what each property represents in this scenario and why they might be different.
 
 **Your Answer:**
+In this scenario, `event.target` refers to the actual element that was clicked, which is the `<button>. event.currentTarget` refers to the element that the event listener is attached to, which is the `<div id="button-container">`. They are different because of event bubbling, where the click starts on the button and then bubbles up to the parent div.
 
 ## Question 3: Creating Elements Dynamically
 
@@ -95,6 +101,24 @@ document.body.append(productCard);
 However, when the page loads and the code is executed, the user isn't able to see the image, product name or product price. What is the issue with this code?
 
 **Your Answer:**
+The issue is that the image, heading, and paragraph elements are never appended to the `productCard` div. Only the empty `productCard` is added to the DOM, so nothing visible appears on the page. To fix this, the code needs to use `productCard.append(productImage, productName, productPrice)` before appending the card to the body.
+
+```js
+//Create
+const productCard = document.createElement('div');
+const productImage = document.createElement('img');
+const productName = document.createElement('h3');
+const productPrice = document.createElement('p');
+
+//Modify
+productImage.src = product.img;
+productName.textContent = product.name;
+productPrice.textContent = `$${product.price}`;
+
+// Append 
+productCard.append(productImage, productName, productPrice);
+document.body.append(productCard);
+```
 
 
 ## Question 4: Event Delegation and event.target.closest()
@@ -135,7 +159,9 @@ todoList.addEventListener('click', (event) => {
 2. Explain what the `event.target.closest('li')` method does and why it is essential to this approach.
 
 **Your Answer:**
+1. This approach is called **event delegation**, and the alternative is adding separate event listeners to each `<li>`. Event delegation is better because it uses fewer event listeners and still works for dynamically added list items.
 
+2. The `event.target.closest('li')` method finds the nearest parent `<li>` element that was clicked, even if the click happened on a child element like a `<p>`. This is essential because it ensures the correct todo item is updated regardless of where inside the `<li>` the user clicks.
 ## Question 5: NodeList
 
 Do some independent learning and reading about the `querySelectorAll()` method. Then, answer these questions:
@@ -144,3 +170,6 @@ Do some independent learning and reading about the `querySelectorAll()` method. 
 2. What is the difference between a `NodeList` and an array? Why is it important to know this difference?
 
 **Your Answer:**
+1. `querySelector()` returns the first matching element, while `querySelectorAll()` returns all matching elements as a `NodeList`. For example, you would use `querySelectorAll('.item')` when you want to loop over and update multiple elements with the same class.
+
+2. A `NodeList` looks similar to an array but does not have all array methods like `map()` or `filter()`. Knowing the difference is important so you don’t accidentally try to use array methods that won’t work unless you convert the `NodeList` into an array.
